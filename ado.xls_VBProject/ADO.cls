@@ -18,8 +18,12 @@ Attribute VB_Exposed = False
 ' reference - http://msdn.microsoft.com/ru-ru/library/windows/desktop/ms678086(v=vs.85).aspx
 ' wiki - http://ru.wikipedia.org/wiki/ADO
 '
+' http://support.microsoft.com/kb/257819/ru
+' http://support.microsoft.com/kb/316934/ru
+' http://support.microsoft.com/kb/246335/ru
+'
 ' @author nerv
-' @version 06/04/2013, 0.1
+' @version 06/04/2013, 0.2
 '--------------------------------
 
 ' Методы:
@@ -30,43 +34,36 @@ Attribute VB_Exposed = False
 ' Свойства:
 '   Connection - объект соединения
 '   Recordset  - результат выполения запроса
-
+'   DataSoure  - источник данных. Полное имя книги эксель.
+'   Header     - учитывать заголовки (да/нет). По умолчанию нет. В этом случае имана полей назначаются автоматически F1 ... Fn.
+'                Если да, первая строка диапазона считается заголовком поля.
 
 Option Explicit
 
 
 Public Connection As Object
 Public Recordset As Object
+Public DataSource As String
+Public Header As Boolean
 
 
 Public Sub Connect()
-    If Me.Connection Is Nothing Then
-        Set Me.Connection = CreateObject("ADODB.Connection")
-    End If
+    Set Me.Connection = CreateObject("ADODB.Connection")
 End Sub
 
 
 Public Sub Disconnect()
     If Not Me.Recordset Is Nothing Then
         Me.Recordset.Close
-    End If
-    
-    If Not Me.Connection Is Nothing Then
         Me.Connection.Close
+        Set Me.Recordset = Nothing
+        Set Me.Connection = Nothing
     End If
-    
-    Set Me.Connection = Nothing
-    Set Me.Recordset = Nothing
 End Sub
 
 
 Public Function Query(ByVal QueryString As String) As Date
-    Call Me.Connect
-    
-    If Me.Connection.ConnectionString = "" Then
-        Me.Connection.Open GetSource()
-    End If
-    
+    Me.Connection.Open GetConnectionString()
     Set Me.Recordset = Me.Connection.Execute(QueryString)
     Query = Now
 End Function
@@ -82,11 +79,12 @@ Private Sub Class_Terminate()
 End Sub
 
 
-Private Function GetSource() As String
-    Dim Source As String
-    Source = IIf(Val(Application.Version) < 12, _
-        "Provider='Microsoft.Jet.OLEDB.4.0';Data Source=':1';Extended Properties='Excel 4.0;HDR=No;IMEX=1';", _
-        "Provider='Microsoft.ACE.OLEDB.12.0';Data Source=':1';Extended Properties='Excel 12.0;HDR=No;IMEX=1';")
-    Source = Replace(Source, ":1", ThisWorkbook.FullName, , 1)
-    GetSource = Source
+Private Function GetConnectionString() As String
+    Dim Params As String
+    Params = IIf(Val(Application.Version) < 12, _
+        "Provider='Microsoft.Jet.OLEDB.4.0';Data Source=':1';Extended Properties='Excel 4.0;HDR=:2;IMEX=1';", _
+        "Provider='Microsoft.ACE.OLEDB.12.0';Data Source=':1';Extended Properties='Excel 12.0;HDR=:2;IMEX=1';")
+    Params = Replace(Params, ":1", IIf(Me.DataSource = "", ThisWorkbook.FullName, Me.DataSource), , 1)
+    Params = Replace(Params, ":2", IIf(Me.Header, "Yes", "No"), , 1)
+    GetConnectionString = Params
 End Function
