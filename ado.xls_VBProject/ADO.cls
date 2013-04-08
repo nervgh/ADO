@@ -22,19 +22,23 @@ Attribute VB_Exposed = False
 ' http://support.microsoft.com/kb/316934/ru
 ' http://support.microsoft.com/kb/246335/ru
 '
+' http://www.w3schools.com/ado/default.asp
+'
 ' @author nerv
-' @version 06/04/2013, 0.2
+' @version 08/04/2013, 0.3
 '--------------------------------
 
 ' Методы:
-'   Connect    - создает объет подключения. Автоматически создается при запросе.
-'   Disconnect - закрывает открытые записи и подключения, уничтожает их. Вызывается автоматически.
+'   Create     - создает объет подключения. Автоматически вызывается при инициализации.
+'   Connect    - открывает соединение. Автоматически вызывается при запросе.
+'   Destroy    - уничтожает объект подключения и объект записей. Вызывается автоматически при выходе из программы.
+'   Disconnect - закрывает открытые записи и подключения. Вызывается автоматически при выходе из программы.
 '   Query      - выполняет SQL запрос. Результат запроса помещает в объект Recordset. Возвращает время, когда был выполен запрос.
 
 ' Свойства:
-'   Connection - объект соединения
-'   Recordset  - результат выполения запроса
-'   DataSoure  - источник данных. Полное имя книги эксель.
+'   Connection - объект соединения.
+'   Recordset  - результат выполения запроса.
+'   DataSoure  - источник данных. Полное имя книги эксель. По умолчанию текущая книга.
 '   Header     - учитывать заголовки (да/нет). По умолчанию нет. В этом случае имана полей назначаются автоматически F1 ... Fn.
 '                Если да, первая строка диапазона считается заголовком поля.
 
@@ -47,35 +51,54 @@ Public DataSource As String
 Public Header As Boolean
 
 
-Public Sub Connect()
+Public Sub Create()
     Set Me.Connection = CreateObject("ADODB.Connection")
+End Sub
+
+
+Public Sub Destroy()
+    Set Me.Recordset = Nothing
+    Set Me.Connection = Nothing
+End Sub
+
+
+Public Sub Connect()
+    Me.Connection.Open GetConnectionString()
 End Sub
 
 
 Public Sub Disconnect()
     If Not Me.Recordset Is Nothing Then
-        Me.Recordset.Close
-        Me.Connection.Close
-        Set Me.Recordset = Nothing
-        Set Me.Connection = Nothing
+        If Me.Recordset.State = 1 Then
+            Me.Recordset.Close
+            Me.Connection.Close
+        End If
     End If
 End Sub
 
 
 Public Function Query(ByVal QueryString As String) As Date
-    Me.Connection.Open GetConnectionString()
+    If Me.Connection Is Nothing Then
+        Call Me.Create
+    End If
+    
+    If Me.Connection.State = 0 Then
+        Call Me.Connect
+    End If
+
     Set Me.Recordset = Me.Connection.Execute(QueryString)
     Query = Now
 End Function
 
 
 Private Sub Class_Initialize()
-    Call Me.Connect
+    Call Me.Create
 End Sub
 
 
 Private Sub Class_Terminate()
     Call Me.Disconnect
+    Call Me.Destroy
 End Sub
 
 

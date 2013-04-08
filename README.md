@@ -10,3 +10,5 @@ ADO (от англ. ActiveX Data Objects — «объекты данных Activ
 http://support.microsoft.com/kb/257819/ru
 http://support.microsoft.com/kb/316934/ru
 http://support.microsoft.com/kb/246335/ru
+
+http://www.w3schools.com/ado/default.asp
