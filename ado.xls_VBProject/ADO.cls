@@ -77,7 +77,7 @@ Public Sub Disconnect()
 End Sub
 
 
-Public Function Query(ByVal QueryString As String) As Date
+Public Function Query(ParamArray QueryString() As Variant) As Date
     If Me.Connection Is Nothing Then
         Call Me.Create
     End If
@@ -86,7 +86,7 @@ Public Function Query(ByVal QueryString As String) As Date
         Call Me.Connect
     End If
 
-    Set Me.Recordset = Me.Connection.Execute(QueryString)
+    Set Me.Recordset = Me.Connection.Execute(Join(QueryString, ""))
     Query = Now
 End Function
 
