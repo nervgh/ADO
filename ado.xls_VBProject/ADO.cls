@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 ' http://www.w3schools.com/ado/default.asp
 '
 ' @author nerv
-' @version 08/04/2013, 0.3
+' @version 29/04/2013, 0.4
 '--------------------------------
 
 ' Ìועמהû:
@@ -62,8 +62,16 @@ Public Sub Destroy()
 End Sub
 
 
-Public Sub Connect()
-    Me.Connection.Open GetConnectionString()
+Public Sub Connect(Optional ByVal ConnectionString As String)
+    If Me.Connection Is Nothing Then
+        Call Me.Create
+    End If
+
+    If ConnectionString = "" Then
+        Me.Connection.Open GetExcelConnectionString()
+    Else
+        Me.Connection.Open ConnectionString
+    End If
 End Sub
 
 
@@ -85,8 +93,8 @@ Public Function Query(ParamArray QueryString() As Variant) As Date
     If Me.Connection.State = 0 Then
         Call Me.Connect
     End If
-
-    Set Me.Recordset = Me.Connection.Execute(Join(QueryString, ""))
+    
+    Set Me.Recordset = Me.Connection.Execute(Join(QueryString, " "))
     Query = Now
 End Function
 
@@ -102,12 +110,12 @@ Private Sub Class_Terminate()
 End Sub
 
 
-Private Function GetConnectionString() As String
+Private Function GetExcelConnectionString() As String
     Dim Params As String
     Params = IIf(Val(Application.Version) < 12, _
         "Provider='Microsoft.Jet.OLEDB.4.0';Data Source=':1';Extended Properties='Excel 4.0;HDR=:2;IMEX=1';", _
         "Provider='Microsoft.ACE.OLEDB.12.0';Data Source=':1';Extended Properties='Excel 12.0;HDR=:2;IMEX=1';")
     Params = Replace(Params, ":1", IIf(Me.DataSource = "", ThisWorkbook.FullName, Me.DataSource), , 1)
     Params = Replace(Params, ":2", IIf(Me.Header, "Yes", "No"), , 1)
-    GetConnectionString = Params
+    GetExcelConnectionString = Params
 End Function
