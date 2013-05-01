@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 ' http://www.w3schools.com/ado/default.asp
 '
 ' @author nerv
-' @version 29/04/2013, 0.4
+' @version 01/05/2013, 0.5
 '--------------------------------
 
 ' Методы:
@@ -33,7 +33,8 @@ Attribute VB_Exposed = False
 '   Connect    - открывает соединение. Автоматически вызывается при запросе.
 '   Destroy    - уничтожает объект подключения и объект записей. Вызывается автоматически при выходе из программы.
 '   Disconnect - закрывает открытые записи и подключения. Вызывается автоматически при выходе из программы.
-'   Query      - выполняет SQL запрос. Результат запроса помещает в объект Recordset. Возвращает время, когда был выполен запрос.
+'   Query      - выполняет SQL запрос. Результат запроса помещает в объект Recordset. Возвращает время, в которое был выполнен запрос.
+'   ToArray    - возвращает результат запроса в виде массива
 
 ' Свойства:
 '   Connection - объект соединения.
@@ -41,6 +42,10 @@ Attribute VB_Exposed = False
 '   DataSoure  - источник данных. Полное имя книги эксель. По умолчанию текущая книга.
 '   Header     - учитывать заголовки (да/нет). По умолчанию нет. В этом случае имана полей назначаются автоматически F1 ... Fn.
 '                Если да, первая строка диапазона считается заголовком поля.
+
+' В случае передачи параметра (ConnectionString) в метод Connect, значение свойств DataSoure и Header не учитывается,
+' и формирование строки соединения ложиться полностью на программиста.
+
 
 Option Explicit
 
@@ -57,6 +62,8 @@ End Sub
 
 
 Public Sub Destroy()
+    Call Me.Disconnect
+    
     Set Me.Recordset = Nothing
     Set Me.Connection = Nothing
 End Sub
@@ -96,6 +103,34 @@ Public Function Query(ParamArray QueryString() As Variant) As Date
     
     Set Me.Recordset = Me.Connection.Execute(Join(QueryString, " "))
     Query = Now
+End Function
+
+
+Public Function ToArray() As Variant
+    Dim Data() As Variant
+    Dim Arr() As Variant
+    Dim Column As Long
+    Dim Row As Long
+    
+    If Me.Recordset Is Nothing Then
+        Exit Function
+    End If
+    
+    If Me.Recordset.BOF And Me.Recordset.EOF Then
+        Exit Function
+    End If
+    
+    Data = Me.Recordset.getRows()
+    
+    ReDim Arr(1 To UBound(Data, 2) + 1, 1 To UBound(Data, 1) + 1)
+    
+    For Column = 0 To UBound(Data, 2)
+        For Row = 0 To UBound(Data, 1)
+            Arr(Column + 1, Row + 1) = Data(Row, Column)
+        Next
+    Next
+    
+    ToArray = Arr
 End Function
 
 
