@@ -9,7 +9,7 @@ Sub Example()
     Range("F1").CopyFromRecordset ADO.Recordset
     
     ' Закрываем соединение, чтобы не висело : )
-    ADO.Disconnect
+    ADO.Destroy
     
     ADO.Query ("SELECT F1 FROM [Лист1$] UNION SELECT F2 FROM [Лист1$];")
     Range("G1").CopyFromRecordset ADO.Recordset

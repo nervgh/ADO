@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 ' http://www.w3schools.com/ado/default.asp
 '
 ' @author nerv
-' @version 01/05/2013, 0.5
+' @version 01/05/2013, 0.6
 '--------------------------------
 
 ' Ìועמהû:
@@ -58,6 +58,7 @@ Public Header As Boolean
 
 Public Sub Create()
     Set Me.Connection = CreateObject("ADODB.Connection")
+    Set Me.Recordset = CreateObject("ADODB.Recordset")
 End Sub
 
 
@@ -86,6 +87,11 @@ Public Sub Disconnect()
     If Not Me.Recordset Is Nothing Then
         If Me.Recordset.State = 1 Then
             Me.Recordset.Close
+        End If
+    End If
+    
+    If Not Me.Connection Is Nothing Then
+        If Me.Connection.State = 1 Then
             Me.Connection.Close
         End If
     End If
@@ -101,7 +107,12 @@ Public Function Query(ParamArray QueryString() As Variant) As Date
         Call Me.Connect
     End If
     
-    Set Me.Recordset = Me.Connection.Execute(Join(QueryString, " "))
+    If Me.Recordset.State = 1 Then
+        Me.Recordset.Close
+    End If
+    
+    Me.Recordset.Open Join(QueryString, " "), Me.Connection
+    
     Query = Now
 End Function
 
