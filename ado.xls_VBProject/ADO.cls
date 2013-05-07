@@ -60,6 +60,8 @@ Public Header As Boolean
 Public Sub Create()
     Set Me.Connection = CreateObject("ADODB.Connection")
     Set Me.Recordset = CreateObject("ADODB.Recordset")
+    
+    Me.Recordset.CursorLocation = 3 ' adUseClient
 End Sub
 
 
@@ -132,7 +134,7 @@ Public Function ToArray() As Variant
         Exit Function
     End If
     
-    ReDim Arr(1 To Me.Recordset.Fields(1).ActualSize, 1 To Me.Recordset.Fields.Count)
+    ReDim Arr(1 To Me.Recordset.RecordCount, 1 To Me.Recordset.Fields.Count)
     
     Me.Recordset.MoveFirst
     
