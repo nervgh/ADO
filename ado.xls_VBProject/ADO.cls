@@ -22,6 +22,7 @@ Attribute VB_Exposed = False
 ' http://support.microsoft.com/kb/316934/ru
 ' http://support.microsoft.com/kb/246335/ru
 '
+' http://www.script-coding.com/ADO.html
 ' http://www.w3schools.com/ado/default.asp
 '
 ' @author nerv
