@@ -2,7 +2,7 @@ Attribute VB_Name = "Module1"
 Sub Example()
     Dim ADO As New ADO
     
-    ADO.Query ("SELECT F1 FROM [Лист1$];")
+    ADO.Query ("SELECT F1, F2 FROM [Лист1$];")
     Range("E1").CopyFromRecordset ADO.Recordset
     
     ADO.Query ("SELECT F2 FROM [Лист1$];")

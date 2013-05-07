@@ -26,7 +26,7 @@ Attribute VB_Exposed = False
 ' http://www.w3schools.com/ado/default.asp
 '
 ' @author nerv
-' @version 01/05/2013, 0.6
+' @version 07/05/2013, 0.7
 '--------------------------------
 
 ' Ìועמהû:
@@ -119,9 +119,9 @@ End Function
 
 
 Public Function ToArray() As Variant
-    Dim Data() As Variant
+    Dim Field As Object
     Dim Arr() As Variant
-    Dim Column As Long
+    Dim Column As Integer
     Dim Row As Long
     
     If Me.Recordset Is Nothing Then
@@ -132,15 +132,21 @@ Public Function ToArray() As Variant
         Exit Function
     End If
     
-    Data = Me.Recordset.getRows()
+    ReDim Arr(1 To Me.Recordset.Fields(1).ActualSize, 1 To Me.Recordset.Fields.Count)
     
-    ReDim Arr(1 To UBound(Data, 2) + 1, 1 To UBound(Data, 1) + 1)
+    Me.Recordset.MoveFirst
     
-    For Column = 0 To UBound(Data, 2)
-        For Row = 0 To UBound(Data, 1)
-            Arr(Column + 1, Row + 1) = Data(Row, Column)
+    Do Until Me.Recordset.EOF
+        Row = Row + 1
+        
+        For Each Field In Me.Recordset.Fields
+            Column = Column + 1
+            Arr(Row, Column) = Field.Value
         Next
-    Next
+        
+        Me.Recordset.MoveNext
+        Column = 0
+    Loop
     
     ToArray = Arr
 End Function
@@ -152,7 +158,6 @@ End Sub
 
 
 Private Sub Class_Terminate()
-    Call Me.Disconnect
     Call Me.Destroy
 End Sub
 
