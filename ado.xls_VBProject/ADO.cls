@@ -8,12 +8,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '--------------------------------
+' @author nerv
+' @version 07/05/2013, 0.7
+'--------------------------------
+'  ласс дл€ работы с объектами Connection и Recordset; выполенени€ SQL запросов к данным эксель, текстовым файлам, базам данных.
+'
 ' ADO (от англ. ActiveX Data Objects Ч Ђобъекты данных ActiveXї) Ч интерфейс программировани€ приложений дл€ доступа к данным,
 ' разработанный компанией Microsoft (MS Access, MS SQL Server) и основанный на технологии компонентов ActiveX.
 ' ADO позвол€ет представл€ть данные из разнообразных источников (рел€ционных баз данных, текстовых файлов и т. д.)
 ' в объектно-ориентированном виде.
-'
-'  ласс дл€ создани€ объекта подключени€ (Connection) и выполенени€ SQL запросов в эксель.
 '
 ' reference - http://msdn.microsoft.com/ru-ru/library/windows/desktop/ms678086(v=vs.85).aspx
 ' wiki - http://ru.wikipedia.org/wiki/ADO
@@ -24,10 +27,6 @@ Attribute VB_Exposed = False
 '
 ' http://www.script-coding.com/ADO.html
 ' http://www.w3schools.com/ado/default.asp
-'
-' @author nerv
-' @version 07/05/2013, 0.7
-'--------------------------------
 
 ' ћетоды:
 '   Create     - создает объет подключени€. јвтоматически вызываетс€ при инициализации.
