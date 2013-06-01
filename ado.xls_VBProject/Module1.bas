@@ -1,5 +1,4 @@
-﻿Attribute VB_Name = "Module1"
-Sub Example()
+﻿Sub Example()
     Dim ADO As New ADO
     
     ADO.Query ("SELECT F1, F2 FROM [Лист1$];")
@@ -8,12 +7,16 @@ Sub Example()
     ADO.Query ("SELECT F2 FROM [Лист1$];")
     Range("F1").CopyFromRecordset ADO.Recordset
     
-    ' Закрываем соединение, чтобы не висело : )
+    ' Уничтожаем объекты Connection и Recordset
+    ' (соединение закроется автоматически)
     ADO.Destroy
     
+    ' Здесь снова создадутся объекты Connection и Recordset,
+    ' установится соединение с источником данных,
+    ' после чего выполнится запрос
     ADO.Query ("SELECT F1 FROM [Лист1$] UNION SELECT F2 FROM [Лист1$];")
     Range("G1").CopyFromRecordset ADO.Recordset
     
     ' Тут автоматически закроется соединение
-    ' и уничтожаться объекты Recordset и Connection
+    ' и уничтожатся объекты Recordset и Connection
 End Sub
