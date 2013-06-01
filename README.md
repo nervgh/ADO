@@ -22,6 +22,108 @@ ADO (от англ. ActiveX Data Objects — «объекты данных Activ
 
 В случае передачи параметра `ConnectionString` в метод **_Connect_**, значение свойств **_DataSoure_** и **_Header_** не учитываются, и формирование строки подключения ложиться полностью на плечи программиста.
 
+## FAQ
+**_1. Как начать работу?_**<br />
+Для того, чтобы начать работу с объектом ADO, надо его создать:
+```vbscript
+Dim ADO As New ADO
+```
+
+**_2. Как сделать запрос к данным текущей книги?_**<br />
+В данном запросе будут выбраны все данные из столбцов A:B с Листа1 текущей книги.<br />
+При этом используются настройки по умолчанию: `Header = No`, `DataSource = ThisWorkbook.FullName`.
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.Query ("SELECT * FROM [Лист1$A:B]")
+End Sub
+```
+
+**_3. Как сделать запрос к данным текущей книги используя имена полей / заголовки столбцов?_**
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.Header = True
+    ADO.Query ("SELECT FieldName FROM [Лист1$A:B]")
+End Sub
+```
+
+**_4. Как сделать запрос к данным другой книги?_**
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.DataSource = Workbook.FullName   ' полный путь к книге
+    ADO.Query ("SELECT * FROM [Лист1$A:B]")
+End Sub
+```
+
+**_5. Как сделать запрос к другим источникам данных (базе данных, текстовым файлам и т.п.)?_**<br />
+В данном случае формирование строки подключения ложится целиком на плечи программиста:
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.Connect ("Your connection string")
+    ADO.Query ("SELECT * FROM ...")
+End Sub
+```
+
+**_6. Я сделал запрос. Где результат?_**<br />
+Результат выполнения запроса хранится в объекте Recordset. Достучаться до него можно так:
+```vbscript
+ADO.Recordset
+```
+
+**_7. Как поместить результат выполнения запроса на лист?_**
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.Query ("SELECT * FROM [Лист1$A:B]")
+        
+    Range("A1").CopyFromRecordset ADO.Recordset    ' поместить результат выполнения запроса на лист начиная с ячейки A1
+End Sub
+```
+
+**_8. Как записать результат выполнения запроса в массив?_**<br />
+Например, используя родной метод `getRows()` объекта `Recordset`:
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+    Dim Arr As Variant
+        
+    ADO.Query ("SELECT * FROM [Лист1$A:B]")
+        
+    Arr = ADO.Recordset.getRows()    ' записать результат выполнения запроса в массив
+End Sub
+```
+Но в этом случае массив будет иметь нестандартный вид. Чтобы получить обычный двумерный массив, можно воспользоваться методом ```ToArray()```:
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+    Dim Arr As Variant
+        
+    ADO.Query ("SELECT * FROM [Лист1$A:B]")
+        
+    Arr = ADO.ToArray()
+End Sub
+```
+
+**_Сахар_**<br />
+Метод `Query` принимает `ParamArray()`, что позволяет писать запросы наглядно и достаточно лаконично (без лишней конкатенации строк):
+```vbscript
+Sub Example()
+    Dim ADO As New ADO
+        
+    ADO.Query "SELECT F1", _
+              "FROM [Sheet1$A:B]", _
+              "WHERE F2 > 0"
+End Sub
+```
+
 ## Related links
 [Использование ADO с данными Excel из Visual Basic или VBA](http://support.microsoft.com/kb/257819/ru)<br />
 [Использование ADO.NET для извлечения и модификации записей книги Excel с помощью Visual Basic .NET](http://support.microsoft.com/kb/316934/ru)<br />
