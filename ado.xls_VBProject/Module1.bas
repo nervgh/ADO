@@ -1,20 +1,19 @@
-Attribute VB_Name = "Module1"
+п»їAttribute VB_Name = "Module1"
 Sub Example()
     Dim ADO As New ADO
     
-    ADO.Query ("SELECT F1, F2 FROM [Лист1$];")
+    ADO.Query ("SELECT F1, F2 FROM [Р›РёСЃС‚1$];")
     Range("E1").CopyFromRecordset ADO.Recordset
     
-    ADO.Query ("SELECT F2 FROM [Лист1$];")
+    ADO.Query ("SELECT F2 FROM [Р›РёСЃС‚1$];")
     Range("F1").CopyFromRecordset ADO.Recordset
     
-    ' Закрываем соединение, чтобы не висело : )
+    ' Р—Р°РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ, С‡С‚РѕР±С‹ РЅРµ РІРёСЃРµР»Рѕ : )
     ADO.Destroy
     
-    ADO.Query ("SELECT F1 FROM [Лист1$] UNION SELECT F2 FROM [Лист1$];")
+    ADO.Query ("SELECT F1 FROM [Р›РёСЃС‚1$] UNION SELECT F2 FROM [Р›РёСЃС‚1$];")
     Range("G1").CopyFromRecordset ADO.Recordset
     
-    ' Тут автоматически закроется соединение
-    ' и уничтожиться объекты Recordset и Connection
+    ' РўСѓС‚ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РєСЂРѕРµС‚СЃСЏ СЃРѕРµРґРёРЅРµРЅРёРµ
+    ' Рё СѓРЅРёС‡С‚РѕР¶Р°С‚СЊСЃСЏ РѕР±СЉРµРєС‚С‹ Recordset Рё Connection
 End Sub
-
